@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lean Is Law — Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #5BC8F5;
+  --blue-dim: rgba(91,200,245,0.18);
+  --blue-glow: rgba(91,200,245,0.35);
+  --blue-deep: #1a7fa8;
+  --glass: rgba(255,255,255,0.04);
+  --gb: rgba(91,200,245,0.15);
+  --border: rgba(91,200,245,0.2);
+  --tp: #f0faff;
+  --ts: rgba(240,250,255,0.5);
+  --bg: #080f14;
+}
+html, body { height: 100%; background: var(--bg); color: var(--tp); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+/* ── SHELL ── */
+.shell {
+  width: 100%; max-width: 390px; height: 100vh;
+  margin: 0 auto; position: relative; overflow: hidden;
+}
+
+/* ambient orbs */
+.orb1 { position: fixed; top: -140px; left: -100px; width: 460px; height: 460px; background: radial-gradient(circle, rgba(91,200,245,0.2) 0%, transparent 68%); pointer-events: none; z-index: 0; }
+.orb2 { position: fixed; bottom: -120px; right: -80px; width: 360px; height: 360px; background: radial-gradient(circle, rgba(26,127,168,0.15) 0%, transparent 68%); pointer-events: none; z-index: 0; }
+
+/* ── SCREENS ── */
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 0.45s ease, transform 0.45s ease; transform: translateX(40px); }
+.screen.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+.screen.exit { opacity: 0; transform: translateX(-40px); }
+
+/* ── PROGRESS BAR ── */
+.progress-bar { display: flex; gap: 5px; padding: 54px 28px 0; }
+.progress-bar.hidden { opacity: 0; }
+.prog-seg { flex: 1; height: 3px; border-radius: 99px; background: rgba(91,200,245,0.15); transition: background 0.4s; }
+.prog-seg.done { background: var(--blue); }
+.prog-seg.active { background: linear-gradient(90deg, var(--blue), rgba(91,200,245,0.4)); }
+
+/* ── BACK BTN ── */
+.back-btn { position: absolute; top: 46px; left: 20px; z-index: 10; background: none; border: none; color: var(--ts); font-size: 22px; cursor: pointer; padding: 8px; display: none; }
+.back-btn.show { display: block; }
+
+/* ══════════════════════════════
+   SPLASH SCREEN
+══════════════════════════════ */
+#screen-splash { justify-content: center; align-items: center; text-align: center; padding: 0 32px; }
+
+.splash-logo-wrap { position: relative; margin-bottom: 32px; }
+.splash-ring { width: 120px; height: 120px; border-radius: 32px; margin: 0 auto 0; position: relative; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--border); overflow: hidden; }
+.splash-ring::before { content: ''; position: absolute; inset: -2px; background: conic-gradient(from 0deg, var(--blue) 0%, rgba(91,200,245,0.1) 40%, var(--blue) 100%); border-radius: 34px; z-index: -1; animation: spin 4s linear infinite; }
+.splash-ring::after { content: ''; position: absolute; inset: 2px; background: #0a1520; border-radius: 30px; }
+.splash-icon { font-size: 48px; z-index: 1; position: relative; }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+.splash-wordmark { font-family: 'Syne', sans-serif; font-size: 38px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(90deg, var(--blue) 0%, rgba(91,200,245,0.5) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; opacity: 0; animation: fadeSlideUp 0.7s 0.4s ease forwards; }
+.splash-tagline { font-size: 15px; font-weight: 300; color: var(--ts); letter-spacing: 0.3px; line-height: 1.5; opacity: 0; animation: fadeSlideUp 0.7s 0.7s ease forwards; }
+.splash-tagline strong { color: var(--blue); font-weight: 500; }
+.splash-divider { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--blue), transparent); margin: 24px auto; opacity: 0; animation: fadeSlideUp 0.7s 0.9s ease forwards; }
+.splash-desc { font-size: 13px; color: rgba(240,250,255,0.35); line-height: 1.7; max-width: 260px; opacity: 0; animation: fadeSlideUp 0.7s 1.1s ease forwards; }
+
+.splash-btn { margin-top: 48px; width: 100%; padding: 17px; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%); color: #fff; border: none; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: 0.3px; opacity: 0; animation: fadeSlideUp 0.7s 1.4s ease forwards; transition: opacity 0.2s, transform 0.2s; position: relative; overflow: hidden; }
+.splash-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); }
+.splash-btn:active { transform: scale(0.97); opacity: 0.88; }
+
+@keyframes fadeSlideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══════════════════════════════
+   QUESTION SCREENS SHARED
+══════════════════════════════ */
+.q-screen { padding: 0 24px 32px; }
+.q-top { padding-top: 100px; }
+.q-label { font-size: 11px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.q-title { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.15; margin-bottom: 6px; }
+.q-sub { font-size: 13px; color: var(--ts); line-height: 1.5; }
+
+.next-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%); color: #fff; border: none; border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all 0.2s; }
+.next-btn:active { transform: scale(0.97); opacity: 0.88; }
+
+/* ══════════════════════════════
+   GENDER SCREEN
+══════════════════════════════ */
+.gender-options { display: flex; flex-direction: column; gap: 14px; margin-top: 32px; }
+.gender-opt { display: flex; align-items: center; gap: 18px; padding: 20px 22px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
+.gender-opt::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg, var(--gb), transparent); opacity:0; transition:opacity 0.3s; }
+.gender-opt.selected { border-color: var(--blue); }
+.gender-opt.selected::before { opacity:1; }
+.gender-glyph { width: 56px; height: 56px; border-radius: 16px; background: var(--glass); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; transition: all 0.25s; }
+.gender-opt.selected .gender-glyph { background: var(--gb); border-color: var(--blue); }
+.gender-info { flex: 1; }
+.gender-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+.gender-detail { font-size: 12px; color: var(--ts); margin-top: 3px; }
+.gender-check { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.25s; }
+.gender-opt.selected .gender-check { background: var(--blue); border-color: var(--blue); }
+.check-mark { color: transparent; font-size: 12px; font-weight: 700; }
+.gender-opt.selected .check-mark { color: #fff; }
+
+/* ══════════════════════════════
+   RULER PICKER
+══════════════════════════════ */
+.ruler-display { text-align: center; margin-top: 36px; }
+.ruler-value { font-family: 'Syne', sans-serif; font-size: 72px; font-weight: 800; color: var(--blue); line-height: 1; letter-spacing: -2px; }
+.ruler-unit { font-size: 18px; font-weight: 400; color: var(--ts); margin-left: 4px; }
+
+.ruler-wrap { position: relative; margin-top: 28px; overflow: hidden; height: 80px; }
+.ruler-center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--blue); transform: translateX(-50%); z-index: 2; box-shadow: 0 0 12px var(--blue-glow); }
+.ruler-center-line::before { content:'▼'; position:absolute; top:-16px; left:50%; transform:translateX(-50%); color:var(--blue); font-size:12px; }
+.ruler-scroller { display: flex; align-items: flex-end; gap: 0; cursor: grab; user-select: none; padding: 0; width: max-content; transition: transform 0.05s linear; }
+.ruler-scroller:active { cursor: grabbing; }
+.tick { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 10px; flex-shrink: 0; }
+.tick-line { border-radius: 2px; background: rgba(91,200,245,0.25); width: 1.5px; }
+.tick.major .tick-line { height: 36px; background: rgba(91,200,245,0.55); width: 2px; }
+.tick.mid .tick-line { height: 22px; }
+.tick.minor .tick-line { height: 14px; }
+.tick-label { font-size: 11px; color: rgba(91,200,245,0.5); margin-top: 7px; font-weight: 500; height: 14px; }
+.tick.major .tick-label { color: var(--blue); font-size: 12px; }
+
+/* fade edges */
+.ruler-wrap::before, .ruler-wrap::after { content:''; position:absolute; top:0; bottom:0; width:80px; z-index:3; pointer-events:none; }
+.ruler-wrap::before { left:0; background:linear-gradient(90deg, var(--bg), transparent); }
+.ruler-wrap::after { right:0; background:linear-gradient(-90deg, var(--bg), transparent); }
+
+/* ── INSIGHT CARD ── */
+.insight-card { margin-top: 24px; background: var(--glass); border: 1px solid var(--border); border-radius: 18px; padding: 18px 20px; position: relative; overflow: hidden; }
+.insight-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--blue),transparent); }
+.insight-badge { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.insight-row { display: flex; align-items: center; gap: 16px; }
+.insight-score { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; line-height: 1; flex-shrink: 0; }
+.insight-score.lean { color: var(--blue); }
+.insight-score.soft { color: #FFD166; }
+.insight-score.warning { color: #ff8c61; }
+.insight-text { flex: 1; }
+.insight-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.insight-desc { font-size: 12px; color: var(--ts); line-height: 1.55; }
+
+/* fat bar */
+.fat-bar { margin-top: 14px; }
+.fat-track { height: 6px; border-radius: 99px; background: linear-gradient(90deg, var(--blue) 0%, #FFD166 50%, #ff8c61 80%, #ff5e5e 100%); position: relative; }
+.fat-cursor { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--blue); box-shadow: 0 0 8px var(--blue-glow); transition: left 0.4s cubic-bezier(.4,0,.2,1); }
+.fat-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 9px; color: rgba(240,250,255,0.3); }
+
+/* ══════════════════════════════
+   SUMMARY SCREEN
+══════════════════════════════ */
+#screen-summary { justify-content: flex-start; }
+.summary-hero { text-align: center; padding: 80px 24px 0; }
+.summary-check { width: 72px; height: 72px; border-radius: 20px; background: var(--gb); border: 1px solid var(--blue); display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 0 auto 20px; animation: popIn 0.5s cubic-bezier(.17,.67,.35,1.3) both; }
+@keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.summary-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+.summary-sub { font-size: 13px; color: var(--ts); }
+
+.summary-stats { display: flex; gap: 10px; margin: 24px 24px 0; }
+.summary-stat { flex: 1; background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 16px 12px; text-align: center; }
+.ss-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--blue); }
+.ss-label { font-size: 10px; color: var(--ts); margin-top: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+.summary-protein { margin: 14px 24px 0; background: var(--glass); border: 1px solid var(--border); border-radius: 18px; padding: 20px; position: relative; overflow: hidden; }
+.summary-protein::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--blue),transparent); }
+.sp-label { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+.sp-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+.sp-num { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; color: var(--blue); line-height: 1; }
+.sp-unit { font-size: 16px; color: var(--ts); }
+.sp-desc { font-size: 12px; color: var(--ts); line-height: 1.6; }
+
+.summary-cta { margin: 16px 24px 0; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(91,200,245,0.15); border: 1px solid var(--blue); color: var(--tp); font-size: 13px; font-weight: 500; padding: 12px 22px; border-radius: 99px; opacity: 0; transition: all 0.3s; z-index: 999; white-space: nowrap; backdrop-filter: blur(10px); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="orb1"></div>
+<div class="orb2"></div>
+
+<div class="shell">
+
+  <!-- BACK -->
+  <button class="back-btn" id="back-btn" onclick="goBack()">←</button>
+
+  <!-- ══ SPLASH ══ -->
+  <div class="screen active" id="screen-splash">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 32px;">
+      <div class="splash-logo-wrap">
+        <div class="splash-ring">
+          <div class="splash-icon">⚔️</div>
+        </div>
+      </div>
+      <div class="splash-wordmark">Lean Is Law</div>
+      <div class="splash-tagline">Get Lean.<br><strong>Without Counting Calories.</strong></div>
+      <div class="splash-divider"></div>
+      <div class="splash-desc">Two simple rules. Daily accountability. The lean, sharp body you've been putting off.</div>
+      <button class="splash-btn" onclick="startOnboarding()">Start My Lean Journey →</button>
+    </div>
+  </div>
+
+  <!-- ══ GENDER ══ -->
+  <div class="screen q-screen" id="screen-gender">
+    <div class="progress-bar" id="pb-gender">
+      <div class="prog-seg active"></div>
+      <div class="prog-seg"></div>
+      <div class="prog-seg"></div>
+      <div class="prog-seg"></div>
+    </div>
+    <div class="q-top">
+      <div class="q-label">Step 1 of 3</div>
+      <div class="q-title">What's your<br>biological sex?</div>
+      <div class="q-sub">Used to calculate your exact protein target.</div>
+    </div>
+    <div class="gender-options">
+      <div class="gender-opt" id="opt-male" onclick="selectGender('male')">
+        <div class="gender-glyph">♂</div>
+        <div class="gender-info">
+          <div class="gender-name">Male</div>
+          <div class="gender-detail">Higher protein target · 1.8g per kg</div>
+        </div>
+        <div class="gender-check"><span class="check-mark">✓</span></div>
+      </div>
+      <div class="gender-opt" id="opt-female" onclick="selectGender('female')">
+        <div class="gender-glyph">♀</div>
+        <div class="gender-info">
+          <div class="gender-name">Female</div>
+          <div class="gender-detail">Calibrated target · 1.6g per kg</div>
+        </div>
+        <div class="gender-check"><span class="check-mark">✓</span></div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="goToHeight()" style="margin-top:auto;">Continue →</button>
+  </div>
+
+  <!-- ══ HEIGHT ══ -->
+  <div class="screen q-screen" id="screen-height">
+    <div class="progress-bar" id="pb-height">
+      <div class="prog-seg done"></div>
+      <div class="prog-seg active"></div>
+      <div class="prog-seg"></div>
+      <div class="prog-seg"></div>
+    </div>
+    <div class="q-top">
+      <div class="q-label">Step 2 of 3</div>
+      <div class="q-title">What's your<br>height?</div>
+    </div>
+
+    <div class="ruler-display">
+      <span class="ruler-value" id="height-val">172</span><span class="ruler-unit">cm</span>
+    </div>
+
+    <div class="ruler-wrap" id="height-ruler-wrap">
+      <div class="ruler-center-line"></div>
+      <div class="ruler-scroller" id="height-ruler"></div>
+    </div>
+
+    <div class="insight-card" id="height-insight">
+      <div class="insight-badge">Lean Is Law — Height Profile</div>
+      <div class="insight-row">
+        <div class="insight-score lean" id="h-insight-score">172</div>
+        <div class="insight-text">
+          <div class="insight-title" id="h-insight-title">Optimal lean frame</div>
+          <div class="insight-desc" id="h-insight-desc">At this height, lean muscle definition is highly visible. Every kg of lean mass shows.</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="next-btn" onclick="goToWeight()">Continue →</button>
+  </div>
+
+  <!-- ══ WEIGHT ══ -->
+  <div class="screen q-screen" id="screen-weight">
+    <div class="progress-bar" id="pb-weight">
+      <div class="prog-seg done"></div>
+      <div class="prog-seg done"></div>
+      <div class="prog-seg active"></div>
+      <div class="prog-seg"></div>
+    </div>
+    <div class="q-top">
+      <div class="q-label">Step 3 of 3</div>
+      <div class="q-title">What's your<br>current weight?</div>
+    </div>
+
+    <div class="ruler-display">
+      <span class="ruler-value" id="weight-val">70</span><span class="ruler-unit">kg</span>
+    </div>
+
+    <div class="ruler-wrap" id="weight-ruler-wrap">
+      <div class="ruler-center-line"></div>
+      <div class="ruler-scroller" id="weight-ruler"></div>
+    </div>
+
+    <div class="insight-card" id="weight-insight">
+      <div class="insight-badge">Lean Is Law — Body Composition</div>
+      <div class="insight-row">
+        <div class="insight-score lean" id="bmi-score">22.4</div>
+        <div class="insight-text">
+          <div class="insight-title" id="bmi-title">Lean foundation</div>
+          <div class="insight-desc" id="bmi-desc">Your frame has real potential. Cut the refined carbs and hit protein — definition follows.</div>
+        </div>
+      </div>
+      <div class="fat-bar">
+        <div class="fat-track"><div class="fat-cursor" id="fat-cursor" style="left:30%"></div></div>
+        <div class="fat-labels"><span>Lean</span><span>Average</span><span>Soft</span><span>Heavy</span></div>
+      </div>
+    </div>
+
+    <button class="next-btn" onclick="goToSummary()">Calculate My Targets →</button>
+  </div>
+
+  <!-- ══ SUMMARY ══ -->
+  <div class="screen" id="screen-summary">
+    <div class="progress-bar" style="padding-top:54px;padding-left:24px;padding-right:24px;">
+      <div class="prog-seg done"></div>
+      <div class="prog-seg done"></div>
+      <div class="prog-seg done"></div>
+      <div class="prog-seg done"></div>
+    </div>
+    <div class="summary-hero">
+      <div class="summary-check">✓</div>
+      <div class="summary-title">Your targets are set.</div>
+      <div class="summary-sub">Two rules. Every day. Starting now.</div>
+    </div>
+    <div class="summary-stats">
+      <div class="summary-stat"><div class="ss-val" id="sum-weight">70</div><div class="ss-label">kg</div></div>
+      <div class="summary-stat"><div class="ss-val" id="sum-height">172</div><div class="ss-label">cm</div></div>
+      <div class="summary-stat"><div class="ss-val" id="sum-bmi">22.4</div><div class="ss-label">BMI</div></div>
+    </div>
+    <div class="summary-protein">
+      <div class="sp-label">Your Daily Protein Target</div>
+      <div class="sp-row">
+        <div class="sp-num" id="sum-protein">126</div>
+        <div class="sp-unit">grams / day</div>
+      </div>
+      <div class="sp-desc" id="sum-protein-desc">Based on your weight and sex. Hit this every day and watch your body composition shift within 3–4 weeks.</div>
+    </div>
+    <div class="summary-cta">
+      <button class="next-btn" onclick="launchApp()">Enter the App →</button>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+const state = { gender: null, height: 172, weight: 70 };
+let screenStack = ['screen-splash'];
+
+// ── NAV ──
+function showScreen(id) {
+  const cur = document.querySelector('.screen.active');
+  if (cur) { cur.classList.add('exit'); setTimeout(()=>{ cur.classList.remove('active','exit'); },400); }
+  const next = document.getElementById(id);
+  setTimeout(()=>{ next.classList.add('active'); },50);
+  screenStack.push(id);
+  document.getElementById('back-btn').className = screenStack.length > 1 ? 'back-btn show' : 'back-btn';
+}
+
+function goBack() {
+  if (screenStack.length <= 1) return;
+  screenStack.pop();
+  const prev = screenStack[screenStack.length - 1];
+  const cur = document.querySelector('.screen.active');
+  if (cur) { cur.classList.remove('active'); }
+  const prevScreen = document.getElementById(prev);
+  prevScreen.style.transform = 'translateX(-40px)';
+  prevScreen.style.opacity = '0';
+  prevScreen.classList.add('active');
+  setTimeout(()=>{ prevScreen.style.transform=''; prevScreen.style.opacity=''; },50);
+  document.getElementById('back-btn').className = screenStack.length > 1 ? 'back-btn show' : 'back-btn';
+}
+
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+// ── SPLASH ──
+function startOnboarding() { showScreen('screen-gender'); }
+
+// ── GENDER ──
+function selectGender(g) {
+  state.gender = g;
+  document.getElementById('opt-male').classList.toggle('selected', g==='male');
+  document.getElementById('opt-female').classList.toggle('selected', g==='female');
+}
+function goToHeight() {
+  if (!state.gender) { showToast('Please select your sex'); return; }
+  showScreen('screen-height');
+  setTimeout(initHeightRuler, 100);
+}
+
+// ── RULER ENGINE ──
+function buildRuler(containerId, min, max, step, initial, tickSpacing, onChange) {
+  const scroller = document.getElementById(containerId);
+  const wrap = scroller.parentElement;
+  const wrapW = 390;
+  const center = wrapW / 2;
+
+  // total ticks
+  const totalTicks = Math.round((max - min) / step) + 1;
+  const totalWidth = (totalTicks - 1) * tickSpacing;
+  const paddingTicks = Math.ceil(center / tickSpacing);
+  const pad = paddingTicks * tickSpacing;
+
+  scroller.innerHTML = '';
+
+  // padding left
+  const padL = document.createElement('div');
+  padL.style.cssText = `width:${pad}px;flex-shrink:0;`;
+  scroller.appendChild(padL);
+
+  for (let i = 0; i < totalTicks; i++) {
+    const val = min + i * step;
+    const isMajor = Math.round(val) % 10 === 0;
+    const isMid = Math.round(val * 10) % 50 === 0 && !isMajor;
+    const t = document.createElement('div');
+    t.className = 'tick ' + (isMajor ? 'major' : isMid ? 'mid' : 'minor');
+    t.style.width = tickSpacing + 'px';
+    const line = document.createElement('div'); line.className = 'tick-line';
+    const label = document.createElement('div'); label.className = 'tick-label';
+    label.textContent = isMajor ? Math.round(val) : '';
+    t.appendChild(line); t.appendChild(label);
+    scroller.appendChild(t);
+  }
+
+  // padding right
+  const padR = document.createElement('div');
+  padR.style.cssText = `width:${pad}px;flex-shrink:0;`;
+  scroller.appendChild(padR);
+
+  // set initial position
+  const initialOffset = -(((initial - min) / step) * tickSpacing);
+  scroller.style.transform = `translateX(${initialOffset}px)`;
+
+  // drag
+  let startX = 0, startOffset = 0, currentOffset = initialOffset, isDragging = false;
+  const minOffset = -((totalTicks - 1) * tickSpacing);
+  const maxOffset = 0;
+
+  function valFromOffset(off) {
+    const idx = Math.round(-off / tickSpacing);
+    return Math.max(min, Math.min(max, min + idx * step));
+  }
+
+  function snapToValue(val) {
+    const idx = Math.round((val - min) / step);
+    currentOffset = -(idx * tickSpacing);
+    scroller.style.transition = 'transform 0.2s cubic-bezier(.4,0,.2,1)';
+    scroller.style.transform = `translateX(${currentOffset}px)`;
+    setTimeout(()=>{ scroller.style.transition=''; },220);
+  }
+
+  function onMove(x) {
+    const dx = x - startX;
+    let off = Math.max(minOffset, Math.min(maxOffset, startOffset + dx));
+    scroller.style.transform = `translateX(${off}px)`;
+    currentOffset = off;
+    const v = valFromOffset(off);
+    onChange(v);
+  }
+
+  // Touch
+  scroller.addEventListener('touchstart', e=>{ isDragging=true; startX=e.touches[0].clientX; startOffset=currentOffset; scroller.style.transition=''; }, {passive:true});
+  scroller.addEventListener('touchmove', e=>{ if(isDragging) onMove(e.touches[0].clientX); }, {passive:true});
+  scroller.addEventListener('touchend', ()=>{ isDragging=false; snapToValue(valFromOffset(currentOffset)); });
+
+  // Mouse
+  scroller.addEventListener('mousedown', e=>{ isDragging=true; startX=e.clientX; startOffset=currentOffset; scroller.style.transition=''; e.preventDefault(); });
+  window.addEventListener('mousemove', e=>{ if(isDragging) onMove(e.clientX); });
+  window.addEventListener('mouseup', ()=>{ if(isDragging){ isDragging=false; snapToValue(valFromOffset(currentOffset)); }});
+
+  return { snapToValue };
+}
+
+// ── HEIGHT RULER ──
+let heightRuler = null;
+function initHeightRuler() {
+  heightRuler = buildRuler('height-ruler', 140, 220, 1, state.height, 10, (v) => {
+    state.height = v;
+    document.getElementById('height-val').textContent = v;
+    updateHeightInsight(v);
+  });
+}
+
+function updateHeightInsight(h) {
+  const el = document.getElementById('h-insight-score');
+  const title = document.getElementById('h-insight-title');
+  const desc = document.getElementById('h-insight-desc');
+  el.textContent = h;
+  if (h < 160) {
+    el.className = 'insight-score soft';
+    title.textContent = 'Compact and powerful';
+    desc.textContent = 'Lower height means muscle mass appears even more defined. Your lean potential is high.';
+  } else if (h < 175) {
+    el.className = 'insight-score lean';
+    title.textContent = 'Optimal lean frame';
+    desc.textContent = 'At this height, lean muscle definition is highly visible. Every kg of lean mass shows.';
+  } else if (h < 185) {
+    el.className = 'insight-score lean';
+    title.textContent = 'Athletic build range';
+    desc.textContent = 'Taller frames carry lean mass elegantly. Hit your protein and the definition will follow.';
+  } else {
+    el.className = 'insight-score lean';
+    title.textContent = 'Tall and lean territory';
+    desc.textContent = 'Long frames look striking when lean. The goal is sharp — not just slim.';
+  }
+}
+
+// ── WEIGHT RULER ──
+let weightRuler = null;
+function goToWeight() {
+  showScreen('screen-weight');
+  setTimeout(initWeightRuler, 100);
+}
+
+function initWeightRuler() {
+  weightRuler = buildRuler('weight-ruler', 40, 150, 0.5, state.weight, 14, (v) => {
+    state.weight = Math.round(v * 2) / 2;
+    document.getElementById('weight-val').textContent = state.weight % 1 === 0 ? state.weight : state.weight.toFixed(1);
+    updateBMI();
+  });
+}
+
+function calcBMI() {
+  const h = state.height / 100;
+  return (state.weight / (h * h)).toFixed(1);
+}
+
+function updateBMI() {
+  const bmi = parseFloat(calcBMI());
+  const score = document.getElementById('bmi-score');
+  const title = document.getElementById('bmi-title');
+  const desc = document.getElementById('bmi-desc');
+  const cursor = document.getElementById('fat-cursor');
+
+  score.textContent = bmi.toFixed(1);
+
+  let pct, cls, t, d;
+  if (bmi < 18.5) {
+    pct = 5; cls='lean'; t='Below lean threshold'; d='You\'re under the ideal zone. Protein is critical here — build lean mass, not just maintain.';
+  } else if (bmi < 22) {
+    pct = 18; cls='lean'; t='Lean foundation'; d='You\'re in the lean zone. Cut refined carbs and hit protein — definition follows within weeks.';
+  } else if (bmi < 25) {
+    pct = 35; cls='lean'; t='Healthy and shapeable'; d='Good base. The refined carb cut will show fast — expect a visible difference in 2–3 weeks.';
+  } else if (bmi < 28) {
+    pct = 55; cls='soft'; t='Carrying some softness'; d='This is exactly what Lean Is Law was built for. Two rules, consistent. You\'ll be surprised how fast it shifts.';
+  } else if (bmi < 32) {
+    pct = 72; cls='warning'; t='Real work ahead — and that\'s fine'; d='The gap between now and lean is just consistency. Protein + no refined carbs. That\'s the whole system.';
+  } else {
+    pct = 88; cls='warning'; t='The law starts now'; d='Every day you follow the two rules, your body shifts. No shortcuts — just the law, every day.';
+  }
+
+  score.className = 'insight-score ' + cls;
+  title.textContent = t;
+  desc.textContent = d;
+  cursor.style.left = pct + '%';
+}
+
+// ── SUMMARY ──
+function goToSummary() {
+  const bmi = calcBMI();
+  const protein = Math.round(state.weight * (state.gender === 'male' ? 1.8 : 1.6));
+
+  document.getElementById('sum-weight').textContent = state.weight % 1 === 0 ? state.weight : state.weight.toFixed(1);
+  document.getElementById('sum-height').textContent = state.height;
+  document.getElementById('sum-bmi').textContent = bmi;
+  document.getElementById('sum-protein').textContent = protein;
+  document.getElementById('sum-protein-desc').textContent =
+    `Based on your ${state.weight}kg body weight. Hit this every day and watch your composition shift in 3–4 weeks.`;
+
+  showScreen('screen-summary');
+}
+
+function launchApp() {
+  showToast('Launching the app... 🚀');
+  setTimeout(() => { window.location.href = 'lean-is-law.html'; }, 1200);
+}
+
+// init
+updateHeightInsight(state.height);
+updateBMI();
+</script>
+</body>
+</html>
